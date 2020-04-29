@@ -3,7 +3,7 @@
 var Crawler = require("crawler");
 const fs = require('fs');
 let book = {}
-const baseUrl = 'http://www.biquku.com/0/330/';
+const baseUrl = 'https://www.12zw.com/4/4417/';
 let text = fs.createWriteStream('text.txt');
 let count = 0;
 
@@ -18,6 +18,8 @@ var c = new Crawler({
             // $ 默认为 Cheerio 解析器
             // 它是核心jQuery的精简实现，可以按照jQuery选择器语法快速提取DOM元素
             var $ = res.$;
+            const title = $('#maininfo h1').text();
+            book.title = title;
             const urls = $('#list a');
             for (let i = 0; i < urls.length; i++) {
                 const url = urls[i];
@@ -28,18 +30,18 @@ var c = new Crawler({
                 book.chapters.push(obj);
             }
             
-            fs.writeFile('book.json', JSON.stringify(book, null, 4), () => {
+            fs.writeFile(`books/${book.title}.json`, JSON.stringify(book, null, 4), () => {
 
             })
 
-            getChapterCont()
+            // getChapterCont()
         }
         done();
     }
 });
 
 // 将一个URL加入请求队列，并使用默认回调函数
-c.queue(baseUrl);
+// c.queue(baseUrl);
 
 // get chapter content
 function getChapterCont () {
@@ -71,4 +73,5 @@ function getChapterCont () {
     }])
 }
 
+getChapterCont('https://www.12zw.com/4/4417/2725633.html')
 
