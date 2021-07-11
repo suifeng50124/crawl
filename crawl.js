@@ -3,7 +3,7 @@
 var Crawler = require("crawler");
 const fs = require('fs');
 let book = {}
-const baseUrl = 'https://www.12zw.com/4/4417/';
+const baseUrl = 'https://www.12zw.la/2/2758/';
 let text = fs.createWriteStream('text.txt');
 let count = 0;
 
@@ -73,5 +73,5 @@ function getChapterCont () {
     }])
 }
 
-getChapterCont('https://www.12zw.com/4/4417/2725633.html')
+getChapterCont('https://www.12zw.la/2/2758/1417388.html')
 
