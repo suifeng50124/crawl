@@ -75,3 +75,5 @@ function getChapterCont () {
 
 getChapterCont('https://www.12zw.la/2/2758/1417388.html')
 
+
+console.log('ss')
