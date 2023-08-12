@@ -19,5 +19,8 @@
   "homepage": "https://github.com/suifeng50124/crawl#readme",
   "dependencies": {
     "crawler": "^1.2.1"
+  },
+  "devDependencies": {
+    "husky": "^8.0.3"
   }
 }
