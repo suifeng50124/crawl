@@ -23,4 +23,18 @@ module.exports = {
     "subject-case": [0, "never"],
     "header-max-length": [0, "always", 72],
   },
+  prompt: {
+    questions: {
+      type: {
+        description: "please input type",
+        enum: {
+          fix: {
+            description: "fix",
+            title: "Fix",
+            emoji: "✨",
+          },
+        },
+      },
+    },
+  },
 };
