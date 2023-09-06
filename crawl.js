@@ -1,10 +1,11 @@
 "use strict";
 
 var Crawler = require("crawler");
-const fs = require("fs");
-let book = {};
-const baseUrl = "http://www.xwbiquge.com/biquge_139414/";
-let text = fs.createWriteStream("text.txt");
+const fs = require('fs');
+let book = {}
+// const baseUrl = 'https://www.12zw.la/2/2758/';
+const baseUrl = 'http://www.xwbiquge.com/biquge_139414/'
+let text = fs.createWriteStream('text.txt');
 let count = 0;
 
 var c = new Crawler({
