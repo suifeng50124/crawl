@@ -1,29 +1,10 @@
-#! /usr/bin/env node
-
 "use strict";
-const { Command } = require("commander");
-var Crawler = require("crawler");
-const inquirer = require("inquirer");
-const fs = require("fs");
-const program = new Command();
 
+var Crawler = require("crawler");
+const fs = require("fs");
+// const baseUrl = 'https://www.xxbiqudu.com/9_9151/';
 const baseUrl = "https://www.xxbiqudu.com/12_12492/";
 let text = fs.createWriteStream("text.txt");
-
-// program.command("init").action(() => {
-//   inquirer
-//     .prompt([
-//       {
-//         name: "chapter",
-//         message: "chapter",
-//       },
-//     ])
-//     .then((answers) => {
-//       if (answers.chapter) {
-//         getChapterCont(`${answers.chapter}.html`);
-//       }
-//     });
-// });
 
 function getChapterCont(chapter) {
   c.queue([
@@ -37,12 +18,14 @@ function getChapterCont(chapter) {
           let $ = res.$;
           console.log(chapter + "--------------");
           const title = $("h1").text();
+          console.log(title);
           // text.write(`\n${title}\n`, function(err) {
           // })
-          console.log(title);
-          const content = $("#chaptercontent").text();
+          const content = $("#content")
+            .html()
+            .replace(/\<br\s*\>/g, "\n");
           console.log("--------------");
-          console.log(content);
+          console.log($("#content").html(content).text());
           // text.write(content, function(err) {
           //     console.log('ok')
           // })
@@ -54,5 +37,4 @@ function getChapterCont(chapter) {
 
 const c = new Crawler();
 
-getChapterCont("6113115.html");
-// program.parse(process.argv);
+getChapterCont("6113145.html");

@@ -1,28 +1,31 @@
+// spider
+
 "use strict";
 
-var Crawler = require("crawler");
-const fs = require('fs');
-let book = {}
-// const baseUrl = 'https://www.12zw.la/2/2758/';
-const baseUrl = 'http://www.xwbiquge.com/biquge_139414/'
-let text = fs.createWriteStream('text.txt');
-let count = 0;
+const Crawler = require("crawler");
+const fs = require("fs");
+const path = require("path");
+
+let book = {};
+const baseUrl = "https://www.xxbiqudu.com/12_12492/";
 
 var c = new Crawler({
-  maxConnections: 2000,
-  // 在每个请求处理完毕后将调用此回调函数
+  maxConnections: 100, // 设置较小的连接数，避免写入内容的顺序问题
   callback: function (error, res, done) {
     if (error) {
       console.log(error);
     } else {
       book.chapters = [];
-      // $ 默认为 Cheerio 解析器
-      // 它是核心jQuery的精简实现，可以按照jQuery选择器语法快速提取DOM元素
-      var $ = res.$;
+      const $ = res.$;
       const title = $("#info h1").text();
-      console.log(title);
       book.title = title;
-      console.log(book);
+
+      const textStream = fs.createWriteStream(
+        path.join(__dirname, `${title}.txt`),
+        {
+          flags: "a",
+        }
+      );
 
       const urls = $("#list a");
       for (let i = 0; i < urls.length; i++) {
@@ -32,51 +35,80 @@ var c = new Crawler({
         obj.title = $(url).text();
         obj.num = obj._url.replace(".html", "");
         book.chapters.push(obj);
+        console.log("obj", obj);
       }
 
+      // 保存目录JSON
       fs.writeFile(
-        `books/${book.title}.json`,
+        path.join(__dirname, `books/${book.title}.json`),
         JSON.stringify(book, null, 4),
-        () => {}
+        () => {
+          console.log("JSON saved");
+          // 根据目录读取内容，按顺序书写到文件
+          writeChaptersSequentially(book.chapters, textStream);
+        }
       );
-      console.log(book);
-      getChapterCont();
     }
     done();
   },
 });
 
-// 将一个URL加入请求队列，并使用默认回调函数
 c.queue(baseUrl);
 
-// get chapter content
-function getChapterCont() {
-  let chapter = book.chapters[count]._url;
+function writeChaptersSequentially(chapters, textStream, index = 0) {
+  if (index >= chapters.length) {
+    console.log("All chapters written");
+    textStream.end();
+    return;
+  }
+
+  const chapter = chapters[index];
+  getChapterContent(chapter, textStream, () => {
+    writeChaptersSequentially(chapters, textStream, index + 1);
+  });
+}
+
+function getChapterContent(obj, textStream, callback) {
+  let url = obj._url;
+  const chap = url.split("/");
+  const chapter = chap[chap.length - 1];
 
   c.queue([
     {
       uri: baseUrl + chapter,
-      rateLimit: 1000,
       forceUTF8: true,
       callback: function (err, res, done) {
         if (err) {
+          console.log("chapter", chapter);
+          console.log("error:", err);
         } else {
           let $ = res.$;
-          console.log(chapter + "--------------");
-          const title = $("h1").text();
-          text.write(`\n${title}\n`, function (err) {});
-          const content = $("#content").text();
-          text.write(content, function (err) {});
-          if (count + 1 < book.chapters.length) {
-            count = count + 1;
-            getChapterCont();
-          }
+          const title = $("h1").text() + "\r\n";
+
+          textStream.write(title, function (err) {
+            if (err) {
+              console.log("write err:", err);
+            } else {
+              console.log("Title written:", title);
+            }
+          });
+
+          const content = $("#content")
+            .html()
+            ?.replace(/\<br\s*\/?\>/g, "\n");
+          const data = $("#content").html(content)?.text();
+
+          textStream.write(data ? data : "", function (err) {
+            if (err) {
+              console.log("write err:", err);
+            } else {
+              console.log("Content written for chapter:", chapter);
+              done();
+              callback();
+            }
+          });
         }
       },
     },
   ]);
 }
-
-// getChapterCont("https://www.12zw.la/2/2758/1417388.html");
-
-// console.log("ss");

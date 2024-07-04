@@ -24,8 +24,9 @@
   "dependencies": {
     "chalk": "^4.1.2",
     "commander": "^11.0.0",
-    "crawler": "^1.2.1",
-    "inquirer": "^8.0.0"
+    "crawler": "^1.4.0",
+    "inquirer": "^8.0.0",
+    "node-xlsx": "^0.23.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.7.1",
